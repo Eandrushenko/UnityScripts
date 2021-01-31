@@ -16,7 +16,9 @@ public class EnemyController : MonoBehaviour
     private Transform m_GroundCheck;                            // A position marking where to check if the player is grounded.
 
     const float k_GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
-    private bool m_Grounded;            // Whether or not the player is grounded.
+
+    [HideInInspector]
+    public bool m_Grounded;            // Whether or not the player is grounded.
     private Rigidbody2D m_Rigidbody2D;
     private Vector3 m_Velocity = Vector3.zero;
 

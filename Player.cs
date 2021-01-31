@@ -11,18 +11,22 @@ public class Player : MonoBehaviour {
     public Text HealthTitle;
     public Text HealthValue;
 
-    //public GameObject deathEffect;
+    public GameObject deathEffect;
 
     public float maxHealth = 100f;
     public float currentHealth = 100f;
 
     public int shields = 5;
 
+    public Image image;
+
+    public Sprite sad;
+
     void Start()
     {
-        maxHealth = PlayerPrefs.GetFloat("Health", maxHealth);
+        maxHealth = GameControl.control.Health;
         currentHealth = maxHealth;
-        shields = PlayerPrefs.GetInt("Shields", shields);
+        shields = GameControl.control.Shields;
     }
 
     // Update is called once per frame
@@ -76,21 +80,26 @@ public class Player : MonoBehaviour {
         {
             interrupt.Active[4] = false;
             shields -= 1;
+            FindObjectOfType<AudioManager>().Play("ShieldOff");
             return;
         }
         interrupt.Active[1] = false;
+        FindObjectOfType<AudioManager>().StopLoop("Heal");
 
         currentHealth -= damage;
 
-        if (currentHealth <= 0)
+        if (currentHealth <= 0f)
         {
             Die();
         }
     }
 
-    void Die()
+    public void Die()
     {
-        //Instantiate(deathEffect, transform.position, Quaternion.identity);
+        image.sprite = sad;
+        FindObjectOfType<AudioManager>().Play("Explosion1");
         Destroy(gameObject);
+        Instantiate(deathEffect, transform.position, Quaternion.identity);
+        FindObjectOfType<Overseer>().DeathQuit();
     }
 }

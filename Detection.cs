@@ -4,10 +4,15 @@ using UnityEngine;
 
 public class Detection : MonoBehaviour
 {
-    public Transform player;
+    private Transform player;
     public float sightRange = 1f;
     public LayerMask layermask;
     public EnemyPivot pivot;
+
+    void Start()
+    {
+        player = GameObject.FindWithTag("Player").transform;
+    }
 
     public bool PlayerDetection()
     {

@@ -18,12 +18,7 @@ public class Braun_Walk : StateMachineBehaviour {
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        braunbot.LookAtPlayer();
-        braunbot.ChasePlayer();
-        if (braunbot.DistanceCheck(5f))
-        {
-            braunbot.StartCoroutine(braunbot.Sapper());
-        }
+        braunbot.Walk();
         if (Time.time > nextFire)
         {
             nextFire = Time.time + fireRate;
@@ -34,6 +29,7 @@ public class Braun_Walk : StateMachineBehaviour {
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        braunbot.StandardLine.enabled = false;
         animator.ResetTrigger("Shoot");
     }
 }

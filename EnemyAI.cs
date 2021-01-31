@@ -5,7 +5,7 @@ using Pathfinding;
 
 public class EnemyAI : MonoBehaviour {
 
-    public Transform target;
+    private Transform target;
 
     public float speed = 200f;
     public float nextWaypointDistance = 3f;
@@ -28,9 +28,12 @@ public class EnemyAI : MonoBehaviour {
     public float fireRate = 1f;
     private float nextFire = 0f;
 
+    public string BulletSFX;
+
     // Use this for initialization
     void Start ()
     {
+        target = GameObject.FindWithTag("Player").transform;
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
 	}
@@ -39,6 +42,7 @@ public class EnemyAI : MonoBehaviour {
     {
         if (Time.time > nextFire)
         {
+            FindObjectOfType<AudioManager>().Play(BulletSFX);
             Instantiate(bulletPrefab, firepoint.position, firepoint.rotation);
             nextFire = Time.time + fireRate;
         }
@@ -70,6 +74,7 @@ public class EnemyAI : MonoBehaviour {
         Enemy enemy = GetComponent<Enemy>();
         if (!enemy.isAlive && !(other.gameObject.layer == 9)) //9 = Player_Bullet Collision layer
         {
+            FindObjectOfType<AudioManager>().Play("DroneCrash");
             Destroy(gameObject);
         }
     }

@@ -15,7 +15,7 @@ public class EnemyMovement : MonoBehaviour {
 
     private bool FacingRight = true;
 
-    public Transform player;
+    private Transform player;
 
     public Transform firepoint;
     public GameObject bulletPrefab;
@@ -26,8 +26,13 @@ public class EnemyMovement : MonoBehaviour {
     public float jumpRate = 10f;
     private float nextJump = 10f;
 
+    public string ShootSFX;
+    public string StepSFX;
+    public string JumpSFX;
+
     void Start()
     {
+        player = GameObject.FindWithTag("Player").transform;
         nextJump = jumpRate;
     }
 
@@ -76,6 +81,17 @@ public class EnemyMovement : MonoBehaviour {
     {
         if (animator.GetBool("Found"))
         {
+            if (controller.m_Grounded && jump)
+            {
+                FindObjectOfType<AudioManager>().Play(JumpSFX);
+            }
+            if (controller.m_Grounded && horizontalMove != 0f && !FindObjectOfType<AudioManager>().isPlaying(StepSFX))
+            {
+                FindObjectOfType<AudioManager>().setPitch(StepSFX, UnityEngine.Random.Range(0.9f, 1.1f));
+                FindObjectOfType<AudioManager>().setVolume(StepSFX, UnityEngine.Random.Range(0.1f, 0.2f));
+                FindObjectOfType<AudioManager>().Play(StepSFX);
+            }
+
             // move our character
             controller.Move(horizontalMove * Time.fixedDeltaTime, jump);
 
@@ -127,6 +143,7 @@ public class EnemyMovement : MonoBehaviour {
     {
         if (Time.time > nextFire)
         {
+            FindObjectOfType<AudioManager>().Play(ShootSFX);
             Instantiate(bulletPrefab, firepoint.position, firepoint.rotation);
             nextFire = Time.time + fireRate;
         }

@@ -86,6 +86,13 @@ public class PlayerController : MonoBehaviour
             // Add a vertical force to the player.
             m_Grounded = false;
             m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce));
+            FindObjectOfType<AudioManager>().Play("Protagonist_Jump");
+        }
+        if (m_Grounded && move != 0f && !FindObjectOfType<AudioManager>().isPlaying("Protagonist_Footstep"))
+        {
+            FindObjectOfType<AudioManager>().setPitch("Protagonist_Footstep", UnityEngine.Random.Range(0.9f, 1.1f));
+            FindObjectOfType<AudioManager>().setVolume("Protagonist_Footstep", UnityEngine.Random.Range(0.1f, 0.2f));
+            FindObjectOfType<AudioManager>().Play("Protagonist_Footstep");
         }
     }
 

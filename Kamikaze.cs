@@ -25,6 +25,8 @@ public class Kamikaze : MonoBehaviour {
     public float fireRate = 1f;
     private float nextFire = 0f;
 
+    public float ContactDamage;
+
     //Seeker Script Variables
     Seeker seeker;
 
@@ -37,14 +39,7 @@ public class Kamikaze : MonoBehaviour {
     {
         //If player exists shoot at player, otherwise shoot somewhere else
         //This if else is here to remove nullreference errors on player death
-        if (GameObject.FindWithTag("Player") != null)
-        {
-            target = GameObject.FindWithTag("Player").transform;
-        }
-        else
-        {
-            target = transform;
-        }
+        target = GameObject.FindWithTag("Player").transform;
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
     }
@@ -103,13 +98,10 @@ public class Kamikaze : MonoBehaviour {
         Player player = hitInfo.GetComponent<Player>();
         if (player != null)
         {
-            player.TakeDamage(50f);
+            FindObjectOfType<AudioManager>().Play("Explosion1");
+            player.TakeDamage(ContactDamage);
             Destroy(gameObject);
             Instantiate(Collision, transform.position, transform.rotation);
-            if (player.GetComponent<Rigidbody2D>() != null)
-            {
-                player.GetComponent<Rigidbody2D>().AddForce(transform.right * 20f);
-            }
         }
     }
 
@@ -118,6 +110,7 @@ public class Kamikaze : MonoBehaviour {
         Enemy enemy = GetComponent<Enemy>();
         if (!enemy.isAlive && !(other.gameObject.layer == 9)) //9 = Player_Bullet Collision layer
         {
+            FindObjectOfType<AudioManager>().Play("DroneCrash");
             Destroy(gameObject);
         }
     }
@@ -147,6 +140,7 @@ public class Kamikaze : MonoBehaviour {
     {
         if (Time.time > nextFire)
         {
+            FindObjectOfType<AudioManager>().Play("KShot");
             Instantiate(bulletPrefab, firepoint.position, firepoint.rotation);
             nextFire = Time.time + fireRate;
         }

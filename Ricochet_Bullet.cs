@@ -39,14 +39,20 @@ public class Ricochet_Bullet : MonoBehaviour
         {
             player.TakeDamage(damage);
 
-            if (player.GetComponent<Rigidbody2D>() != null)
-            {
-                player.GetComponent<Rigidbody2D>().AddForce(transform.right * impactForce);
-            }
+            FindObjectOfType<AudioManager>().setPitch("MetalCollision", UnityEngine.Random.Range(0.7f, 0.9f));
+            FindObjectOfType<AudioManager>().setVolume("MetalCollision", UnityEngine.Random.Range(0.1f, 0.2f));
+            FindObjectOfType<AudioManager>().Play("MetalCollision");
+
             Destroy(gameObject);
             Instantiate(Collision, transform.position, transform.rotation);
         }
-        Bounce(collision.GetContact(0).normal);
+        else
+        {
+            FindObjectOfType<AudioManager>().setPitch("Ricochet", UnityEngine.Random.Range(0.7f, 0.9f));
+            FindObjectOfType<AudioManager>().setVolume("Ricochet", UnityEngine.Random.Range(0.1f, 0.2f));
+            FindObjectOfType<AudioManager>().Play("Ricochet");
+            Bounce(collision.GetContact(0).normal);
+        }
     }
 
     private void Bounce(Vector3 collisionNormal)

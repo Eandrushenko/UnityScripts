@@ -9,34 +9,34 @@ public class Upgrades : MonoBehaviour
 
     public void LoadAbilities()
     {
-        AbilityText[0].text = PlayerPrefs.GetFloat("Health", 100).ToString();
-        AbilityText[1].text = PlayerPrefs.GetInt("Heals", 5).ToString();
-        AbilityText[2].text = PlayerPrefs.GetInt("ContemptShots", 0).ToString();
-        AbilityText[3].text = PlayerPrefs.GetFloat("ContemptDamage", 25f).ToString();
-        AbilityText[4].text = PlayerPrefs.GetFloat("Time", 0f).ToString();
-        AbilityText[5].text = PlayerPrefs.GetInt("Shields", 0).ToString();
-        AbilityText[6].text = PlayerPrefs.GetInt("Teleports", 0).ToString();
-        AbilityText[7].text = PlayerPrefs.GetInt("CalmShots", 0).ToString();
-        AbilityText[8].text = PlayerPrefs.GetFloat("CalmDamage", 5f).ToString();
-        AbilityText[9].text = PlayerPrefs.GetInt("Bursts", 0).ToString();
-        AbilityText[10].text = PlayerPrefs.GetFloat("Rage", 100).ToString();
-        AbilityText[11].text = PlayerPrefs.GetInt("AP", 0).ToString();
+        AbilityText[0].text = GameControl.control.Health.ToString();
+        AbilityText[1].text = GameControl.control.Heals.ToString();
+        AbilityText[2].text = GameControl.control.ContemptShots.ToString();
+        AbilityText[3].text = GameControl.control.ContemptDamage.ToString();
+        AbilityText[4].text = GameControl.control.Time.ToString();
+        AbilityText[5].text = GameControl.control.Shields.ToString();
+        AbilityText[6].text = GameControl.control.Teleports.ToString();
+        AbilityText[7].text = GameControl.control.CalmShots.ToString();
+        AbilityText[8].text = GameControl.control.CalmDamage.ToString();
+        AbilityText[9].text = GameControl.control.Bursts.ToString();
+        AbilityText[10].text = GameControl.control.Rage.ToString();
+        AbilityText[11].text = GameControl.control.AP.ToString();
     }
 
     public void ResetAbilities()
     {
-        PlayerPrefs.SetFloat("Health", 100f);
-        PlayerPrefs.SetInt("Heals", 5);
-        PlayerPrefs.SetInt("ContemptShots", 0);
-        PlayerPrefs.SetFloat("ContemptDamage", 25f);
-        PlayerPrefs.SetFloat("Time", 0f);
-        PlayerPrefs.SetInt("Shields", 0);
-        PlayerPrefs.SetInt("Teleports", 0);
-        PlayerPrefs.SetInt("CalmShots", 0);
-        PlayerPrefs.SetFloat("CalmDamage", 5f);
-        PlayerPrefs.SetInt("Bursts", 0);
-        PlayerPrefs.SetFloat("Rage", 100);
-        PlayerPrefs.SetInt("AP", PlayerPrefs.GetInt("Level", 0));
+        GameControl.control.Health = 100f;
+        GameControl.control.Heals = 3;
+        GameControl.control.ContemptShots = 0;
+        GameControl.control.ContemptDamage = 25f;
+        GameControl.control.Time = 0f;
+        GameControl.control.Shields = 0;
+        GameControl.control.Teleports = 0;
+        GameControl.control.CalmShots = 0;
+        GameControl.control.CalmDamage = 6f;
+        GameControl.control.Bursts = 0;
+        GameControl.control.Rage = 100f;
+        GameControl.control.AP = GameControl.control.Level;
         LoadAbilities();
     }
 }

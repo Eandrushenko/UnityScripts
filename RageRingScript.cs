@@ -5,7 +5,7 @@ using UnityEngine;
 public class RageRingScript : MonoBehaviour
 {
 
-    public float damage = 200f;
+    public float damage = 100f;
 
     private float TimeToLive = 0.35f;
 

@@ -8,7 +8,6 @@ public class Bullet : MonoBehaviour {
 
     public float damage = 10f;
     public float speed = 20f;
-    public float impactForce = 30f;
     public int bulletType = 0;
 
     private float TimeToLive = 3f;
@@ -20,11 +19,11 @@ public class Bullet : MonoBehaviour {
         Destroy(gameObject, TimeToLive);
         if (bulletType == 1)
         {
-            damage = PlayerPrefs.GetFloat("ContemptDamage", damage);
+            damage = GameControl.control.ContemptDamage;
         }
         else if (bulletType == 2)
         {
-            damage = PlayerPrefs.GetFloat("CalmDamage", damage);
+            damage = GameControl.control.CalmDamage;
         }
     }
 
@@ -40,11 +39,15 @@ public class Bullet : MonoBehaviour {
         if (enemy != null)
         {
             enemy.TakeDamage(damage);
-
-            if (enemy.GetComponent<Rigidbody2D>() != null)
-            {
-                enemy.GetComponent<Rigidbody2D>().AddForce(transform.right * impactForce);
-            }
+            FindObjectOfType<AudioManager>().setPitch("MetalCollision", UnityEngine.Random.Range(0.9f, 1.1f));
+            FindObjectOfType<AudioManager>().setVolume("MetalCollision", UnityEngine.Random.Range(0.1f, 0.2f));
+            FindObjectOfType<AudioManager>().Play("MetalCollision");
+        }
+        else
+        {
+            FindObjectOfType<AudioManager>().setPitch("WallCollision", UnityEngine.Random.Range(0.9f, 1.1f));
+            FindObjectOfType<AudioManager>().setVolume("WallCollision", UnityEngine.Random.Range(0.1f, 0.2f));
+            FindObjectOfType<AudioManager>().Play("WallCollision");
         }
 
         Destroy(gameObject);

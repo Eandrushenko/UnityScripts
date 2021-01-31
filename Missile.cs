@@ -80,13 +80,9 @@ public class Missile : MonoBehaviour {
         if (player != null)
         {
             player.TakeDamage(damage);
-
-            if (player.GetComponent<Rigidbody2D>() != null)
-            {
-                player.GetComponent<Rigidbody2D>().AddForce(transform.right * impactForce);
-            }
         }
 
+        FindObjectOfType<AudioManager>().Play("Explosion1");
         Destroy(gameObject);
         Instantiate(Collision, transform.position, transform.rotation);
     }

@@ -14,10 +14,12 @@ public class AbilityController : MonoBehaviour {
     public Transform ring;
 
     public float timeleft = 30f;
-    public int heals = 5;
+    public int heals = 3;
     public int rages = 1;
 
     private float healrate = 10f;
+
+    private bool isPaused;
 
     void Activate(int j)
     {
@@ -33,6 +35,7 @@ public class AbilityController : MonoBehaviour {
     {
         face.gameObject.GetComponent<SpriteRenderer>().sprite = faces[0];
         indicator.anchoredPosition = new Vector2(-450f, 40f);
+
         Activate(0);
     }
 
@@ -44,6 +47,7 @@ public class AbilityController : MonoBehaviour {
             face.gameObject.GetComponent<SpriteRenderer>().sprite = faces[1];
             indicator.anchoredPosition = new Vector2(-310f, 40f);
             heals -= 1;
+            FindObjectOfType<AudioManager>().PlayLoop("Heal");
 
             Activate(1);
         }
@@ -68,6 +72,8 @@ public class AbilityController : MonoBehaviour {
             speed.runSpeed = 80f;
             jump.m_JumpForce = 2000f;
 
+            FindObjectOfType<AudioManager>().Play("Surprise");
+
             Activate(3);
         }
     }
@@ -79,6 +85,7 @@ public class AbilityController : MonoBehaviour {
         {
             face.gameObject.GetComponent<SpriteRenderer>().sprite = faces[4];
             indicator.anchoredPosition = new Vector2(-450f, -30f);
+            FindObjectOfType<AudioManager>().Play("ShieldOn");
 
             Activate(4);
         }
@@ -107,6 +114,7 @@ public class AbilityController : MonoBehaviour {
             face.gameObject.GetComponent<SpriteRenderer>().sprite = faces[7];
             indicator.anchoredPosition = new Vector2(0f, -30f);
             Instantiate(ring, transform.position, transform.rotation);
+            FindObjectOfType<AudioManager>().Play("Rage");
             rages -= 1;
 
             Activate(7);
@@ -152,31 +160,39 @@ public class AbilityController : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
     {
-        timeleft = PlayerPrefs.GetFloat("Time", timeleft);
-        rages = PlayerPrefs.GetInt("Bursts", rages);
-        heals = PlayerPrefs.GetInt("Heals", heals);
+        timeleft = GameControl.control.Time;
+        rages = GameControl.control.Bursts;
+        heals = GameControl.control.Heals;
 
-        healrate = PlayerPrefs.GetFloat("Health", 100f);
+        healrate = GameControl.control.Health;
         healrate /= 10f;
-
     }
 	
 	// Update is called once per frame
 	void Update ()
     {
-        Abilities();
-        defaultState();
-        abilityClock();
-        if (Active[1])
+        isPaused = FindObjectOfType<Overseer>().isPaused;
+        if (!isPaused)
         {
-            Player health = GetComponent<Player>();
-            if (health.currentHealth < health.maxHealth)
+            Abilities();
+            defaultState();
+            abilityClock();
+            if (Active[1])
             {
-                health.currentHealth = health.currentHealth + Time.deltaTime * healrate;
+                Player health = GetComponent<Player>();
+                if (health.currentHealth < health.maxHealth)
+                {
+                    health.currentHealth = health.currentHealth + Time.deltaTime * healrate;
+                    FindObjectOfType<AudioManager>().setPitch("Heal", (health.currentHealth / health.maxHealth));
+                }
+                else
+                {
+                    Active[1] = false;
+                }
             }
             else
             {
-                Active[1] = false;
+                FindObjectOfType<AudioManager>().StopLoop("Heal");
             }
         }
     }

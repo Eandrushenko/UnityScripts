@@ -5,48 +5,118 @@ using UnityEngine.UI;
 
 public class AbilityPoints : MonoBehaviour
 {
-    public Text AbilityText;
-    public Text apText;
-
-    public string PrefName;
-    public float increaseValue;
-    public float initialValue;
-    public bool isFloat;
-
     //TODO: Add a cap for upgrades
+    public Text AbilityText;
+    public Text APText;
 
-    public void SpendPoints()
+    private bool SpendPoints()
     {
-        int ap = PlayerPrefs.GetInt("AP", 0);
-        if (ap > 0)
+        bool hasPoints = false;
+        if (GameControl.control.AP > 0)
         {
-            upgradeitem();
+            hasPoints = true;
+            GameControl.control.AP -= 1;
+            APText.text = GameControl.control.AP.ToString();
+        }
+        return hasPoints;
+    }
 
-            ap -= 1;
-            PlayerPrefs.SetInt("AP", ap);
-            apText.text = PlayerPrefs.GetInt("AP", 0).ToString();
+    public void upgradeHealth()
+    {
+        if (SpendPoints())
+        {
+            GameControl.control.Health += 100f;
+            AbilityText.text = GameControl.control.Health.ToString();
         }
     }
 
-    private void upgradeitem()
+    public void upgradeHeals()
     {
-        if (isFloat)
+        if (SpendPoints())
         {
-            float ability = PlayerPrefs.GetFloat(PrefName, initialValue);
-            ability += increaseValue;
-            PlayerPrefs.SetFloat(PrefName, ability);
-            AbilityText.text = PlayerPrefs.GetFloat(PrefName, initialValue).ToString();
+            GameControl.control.Heals += 1;
+            AbilityText.text = GameControl.control.Heals.ToString();
         }
-        else
-        {
-            //Convert Float to Int
-            int initV = (int)initialValue;
-            int incV = (int)increaseValue;
+    }
 
-            int ability = PlayerPrefs.GetInt(PrefName, initV);
-            ability += incV;
-            PlayerPrefs.SetInt(PrefName, ability);
-            AbilityText.text = PlayerPrefs.GetInt(PrefName, initV).ToString();
+    public void upgradeContemptShots()
+    {
+        if (SpendPoints())
+        {
+            GameControl.control.ContemptShots += 10;
+            AbilityText.text = GameControl.control.ContemptShots.ToString();
+        }
+    }
+
+    public void upgradeContemptDamage()
+    {
+        if (SpendPoints())
+        {
+            GameControl.control.ContemptDamage += 15f;
+            AbilityText.text = GameControl.control.ContemptDamage.ToString();
+        }
+    }
+
+    public void upgradeTime()
+    {
+        if (SpendPoints())
+        {
+            GameControl.control.Time += 5f;
+            AbilityText.text = GameControl.control.Time.ToString();
+        }
+    }
+
+    public void upgradeShields()
+    {
+        if (SpendPoints())
+        {
+            GameControl.control.Shields += 1;
+            AbilityText.text = GameControl.control.Shields.ToString();
+        }
+    }
+
+    public void upgradeTeleports()
+    {
+        if (SpendPoints())
+        {
+            GameControl.control.Teleports += 1;
+            AbilityText.text = GameControl.control.Teleports.ToString();
+        }
+    }
+
+    public void upgradeCalmShots()
+    {
+        if (SpendPoints())
+        {
+            GameControl.control.CalmShots += 50;
+            AbilityText.text = GameControl.control.CalmShots.ToString();
+        }
+    }
+
+    public void upgradeCalmDamage()
+    {
+        if (SpendPoints())
+        {
+            GameControl.control.CalmDamage += 3f;
+            AbilityText.text = GameControl.control.CalmDamage.ToString();
+        }
+    }
+
+    public void upgradeBursts()
+    {
+        if (SpendPoints())
+        {
+            GameControl.control.Bursts += 1;
+            AbilityText.text = GameControl.control.Bursts.ToString();
+        }
+    }
+
+    public void upgradeRage()
+    {
+        if (SpendPoints())
+        {
+            GameControl.control.Rage += 50f;
+            AbilityText.text = GameControl.control.Rage.ToString();
         }
     }
 }

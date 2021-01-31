@@ -15,7 +15,7 @@ public class PogoMovement : MonoBehaviour {
 
     private bool FacingRight = true;
 
-    public Transform player;
+    private Transform player;
 
     public Transform[] firepoints;
 
@@ -29,6 +29,7 @@ public class PogoMovement : MonoBehaviour {
 
     void Start()
     {
+        player = GameObject.FindWithTag("Player").transform;
         nextJump = jumpRate;
     }
 
@@ -75,6 +76,11 @@ public class PogoMovement : MonoBehaviour {
 
     void FixedUpdate()
     {
+        if (controller.m_Grounded && jump)
+        {
+            FindObjectOfType<AudioManager>().Play("Enemy_Jump");
+        }
+
         if (animator.GetBool("Found"))
         {
             // move our character
@@ -128,6 +134,7 @@ public class PogoMovement : MonoBehaviour {
     {
         if (Time.time > nextFire)
         {
+            FindObjectOfType<AudioManager>().Play("PogoShot");
             Instantiate(bulletPrefab, firepoints[0].position, firepoints[0].rotation);
             Instantiate(bulletPrefab, firepoints[1].position, firepoints[1].rotation);
             Instantiate(bulletPrefab, firepoints[2].position, firepoints[2].rotation);

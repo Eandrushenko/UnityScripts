@@ -2,32 +2,118 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BraunBot : MonoBehaviour {
+public class BraunBot : MonoBehaviour
+{
 
-    public Transform player;
+    public EnemyController controller;
+    public Animator animator;
+
+    public float runSpeed = 40f;
+
+    private float horizontalMove = 0f;
+
+    private bool FacingRight = true;
+
+    private Transform player;
+
     public Transform firepoint;
+    public Transform firepoint0;
+    public Transform firepoint1;
+    public Transform firepoint2;
+
     public LineRenderer StandardLine;
     public LayerMask layermask;
-    Rigidbody2D rb;
 
-    public Transform shotpoint0;
-    public Transform shotpoint1;
-    public Transform shotpoint2;
+    public GameObject YellowBullet;
+    public GameObject OrangeBullet;
 
-    public GameObject BraunBullet0;
-    public GameObject BraunBullet1;
+    public GameObject BossHealthBar;
 
-    public bool FacingRight = true;
+    private bool isPaused;
 
-    public float currentHealth = 1000f;
-    private float totalHealth;
-
-    public bool isInvulnerable = false;
+    private bool song1 = true;
 
     void Start()
     {
-        totalHealth = currentHealth;
-        rb = GetComponent<Rigidbody2D>();
+        player = GameObject.FindWithTag("Player").transform;
+    }
+
+    void Update()
+    {
+        if (animator.GetBool("Found"))
+        {
+            float direction = 0f;
+            if (player != null)
+            {
+                float distance = player.position.x - transform.position.x;
+                if (distance < 0)
+                {
+                    direction = -1f;
+                }
+                else if (distance > 0)
+                {
+                    direction = 1f;
+                }
+            }
+
+            horizontalMove = direction * runSpeed;
+
+            LookAtPlayer();
+
+            PillarSet();
+
+            Music();
+
+            BossHealthBar.SetActive(true);
+        }
+    }
+
+    void Music()
+    {
+        if (animator.GetBool("Found") && song1)
+        {
+            song1 = false;
+            FindObjectOfType<AudioManager>().PlayLoop("Song1");
+        }
+    }
+
+    void PillarSet()
+    {
+        Enemy enemy = GetComponent<Enemy>();
+        if (enemy.health < (enemy.getMaxhealth() / 2))
+        {
+            animator.SetBool("isPillar", true);
+        }
+    }
+
+    public void OnLanding()
+    {
+        return;
+    }
+
+    public void Walk()
+    {
+        controller.Move(horizontalMove * Time.fixedDeltaTime, false);
+        Sapper();
+    }
+
+
+    float AngleDir(Vector3 fwd, Vector3 targetDir, Vector3 up)
+    {
+        Vector3 perp = Vector3.Cross(fwd, targetDir);
+        float dir = Vector3.Dot(perp, up);
+
+        if (dir > 0f)
+        {
+            return 1f;
+        }
+        else if (dir < 0f)
+        {
+            return -1f;
+        }
+        else {
+            return 0f;
+        }
     }
 
     public void LookAtPlayer()
@@ -47,93 +133,49 @@ public class BraunBot : MonoBehaviour {
         }
     }
 
-    public void ChasePlayer()
+    public void Shoot()
     {
-        if (player != null)
-        {
-            Vector2 direction = ((Vector2)player.position - rb.position).normalized;
-            Vector2 force = direction * 2000f * Time.fixedDeltaTime;
-            rb.AddForce(force);
-        }
+        FindObjectOfType<AudioManager>().Play("BraunShot");
+        Instantiate(YellowBullet, firepoint0.position, firepoint0.rotation);
+        Instantiate(YellowBullet, firepoint1.position, firepoint1.rotation);
     }
 
-    public IEnumerator Sapper()
+    private void Sapper()
     {
-        RaycastHit2D hitInfo = Physics2D.Raycast(firepoint.position, firepoint.right, 20f, layermask);
-        if (hitInfo && !hitInfo.transform.CompareTag("Enemy"))
+        isPaused = FindObjectOfType<Overseer>().isPaused;
+        if (player != null && !isPaused)
         {
-            Player player = hitInfo.transform.GetComponent<Player>();
-            if (player != null)
+            RaycastHit2D hitinfo = Physics2D.Raycast(firepoint.position, (player.position - firepoint.position), 10f, layermask);
+            if (hitinfo)
             {
-                player.TakeDamage(0.1f);
+                Player target = hitinfo.transform.GetComponent<Player>();
+                if (target != null)
+                {
+                    StandardLine.enabled = true;
+                    target.TakeDamage(0.1f);
+                    if (!FindObjectOfType<AudioManager>().isPlaying("LaserBeam"))
+                    {
+                        FindObjectOfType<AudioManager>().Play("LaserBeam");
+                    }
+                }
+
+                StandardLine.SetPosition(0, firepoint.position);
+                StandardLine.SetPosition(1, hitinfo.transform.position);
             }
-
-            StandardLine.SetPosition(0, firepoint.position);
-            StandardLine.SetPosition(1, hitInfo.point);
-
+            else
+            {
+                StandardLine.enabled = false;
+            }
         }
         else
         {
-            StandardLine.SetPosition(0, firepoint.position);
-            StandardLine.SetPosition(1, firepoint.position + (firepoint.right * 100));
+            StandardLine.enabled = false;
         }
-
-        StandardLine.enabled = true;
-
-        yield return new WaitForSeconds(0.02f);
-
-        StandardLine.enabled = false;
-    }
-
-    public bool DistanceCheck(float AttackRange)
-    {
-        bool result = false;
-        if (player != null)
-        {
-            if (Vector2.Distance(player.position, rb.position) <= AttackRange)
-            {
-                result = true;
-            }
-        }
-        return result;
-    }
-
-    public void BraunShot()
-    {
-        Instantiate(BraunBullet0, shotpoint0.position, shotpoint0.rotation);
-        Instantiate(BraunBullet0, shotpoint1.position, shotpoint1.rotation);
-    }
-
-    public void TakeDamage(float damage)
-    {
-        if (isInvulnerable)
-        {
-            return;
-        }
-
-        currentHealth -= damage;
-
-        if (currentHealth <= (0.4 * totalHealth))
-        {
-            GetComponent<Animator>().SetBool("isPillar", true);
-        }
-
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
-    }
-
-    void Die()
-    {
-        //Instantiate(deathEffect, transform.position, Quaternion.identity);
-        Destroy(gameObject);
     }
 
     public void Stance()
     {
-        Instantiate(BraunBullet1, shotpoint2.position, shotpoint2.rotation);
+        FindObjectOfType<AudioManager>().Play("BraunPillar");
+        Instantiate(OrangeBullet, firepoint2.position, firepoint2.rotation);
     }
-
-
 }

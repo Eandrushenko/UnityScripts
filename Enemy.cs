@@ -12,6 +12,10 @@ public class Enemy : MonoBehaviour {
 
     public bool isAlive = true;
 
+    public string deathsound;
+
+    public bool isInvulernable = false;
+
     void Start()
     {
         maxhealth = health;
@@ -27,6 +31,11 @@ public class Enemy : MonoBehaviour {
 
     public void TakeDamage(float damage)
     {
+        if (isInvulernable)
+        {
+            return;
+        }
+
         health -= damage;
 
         if (health <= 0)
@@ -41,9 +50,13 @@ public class Enemy : MonoBehaviour {
     {
         if (XPGiver == true)
         {
+            FindObjectOfType<AudioManager>().Play(deathsound);
             GameObject player = GameObject.FindWithTag("Player");
             LevelSystem lvlsys = player.GetComponent<LevelSystem>();
-            lvlsys.AddExperience(XP);
+            if (lvlsys != null)
+            {
+                lvlsys.AddExperience(XP);
+            }
             XPGiver = false;
         }
     }

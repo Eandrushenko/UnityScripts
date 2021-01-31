@@ -16,30 +16,36 @@ public class PlayerMovement : MonoBehaviour {
     public RuntimeAnimatorController regularController;
     public RuntimeAnimatorController ShieldController;
 
+    private bool isPaused;
+
     void Update()
     {
-        AbilityController checker = GetComponent<AbilityController>();
-        if (checker.Active[4])
+        isPaused = FindObjectOfType<Overseer>().isPaused;
+        if (!isPaused)
         {
-            animator.runtimeAnimatorController = ShieldController;
-        }
-        else
-        {
-            animator.runtimeAnimatorController = regularController;
-        }
+            AbilityController checker = GetComponent<AbilityController>();
+            if (checker.Active[4])
+            {
+                animator.runtimeAnimatorController = ShieldController;
+            }
+            else
+            {
+                animator.runtimeAnimatorController = regularController;
+            }
 
-        horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed;
+            horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed;
 
-        animator.SetFloat("Speed", Mathf.Abs(horizontalMove));
+            animator.SetFloat("Speed", Mathf.Abs(horizontalMove));
 
-        if (jumpFlag)
-        {
-            animator.SetBool("IsJumping", true);
-            jumpFlag = false;
-        }
-        if (Input.GetButtonDown("Jump"))
-        {
-            jump = true;
+            if (jumpFlag)
+            {
+                animator.SetBool("IsJumping", true);
+                jumpFlag = false;
+            }
+            if (Input.GetButtonDown("Jump") || (Input.GetKeyDown(KeyCode.UpArrow)))
+            {
+                jump = true;
+            }
         }
     }
 

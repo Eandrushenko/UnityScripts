@@ -15,26 +15,34 @@ public class LevelSystem : MonoBehaviour
 
     void Start()
     {
-        Level = PlayerPrefs.GetInt("Level", 0);
-        CurrentXP = PlayerPrefs.GetFloat("XP", 0f);
+        Level = GameControl.control.Level;
+        CurrentXP = GameControl.control.XP;
         XPtoNextLevel = FindXPtoNextLevel();
-        totalXP = PlayerPrefs.GetFloat("totalXP", 0f);
+        totalXP = GameControl.control.totalXP;
     }
 
     public void AddExperience(float amount)
     {
         totalXP += amount;
-        CurrentXP += amount;
-        while (CurrentXP > XPtoNextLevel)
+        if (Level < 50)
         {
-            Level++;
-            CurrentXP -= XPtoNextLevel;
-            XPtoNextLevel = FindXPtoNextLevel();
-            PlayerPrefs.SetInt("AP", (PlayerPrefs.GetInt("AP", 0) + 1));
+            CurrentXP += amount;
+            while (CurrentXP > XPtoNextLevel)
+            {
+                Level++;
+                CurrentXP -= XPtoNextLevel;
+                XPtoNextLevel = FindXPtoNextLevel();
+                GameControl.control.AP += 1;
+            }
+            GameControl.control.Level = Level;
+            GameControl.control.XP = CurrentXP;
         }
-        PlayerPrefs.SetInt("Level", Level);
-        PlayerPrefs.SetFloat("XP", CurrentXP);
-        PlayerPrefs.SetFloat("totalXP", totalXP);
+        else if (Level > 50)
+        {
+            Level = 50;
+            GameControl.control.Level = Level;
+        }
+        GameControl.control.totalXP = totalXP;
     }
 
     public int getLevel()
@@ -63,10 +71,10 @@ public class LevelSystem : MonoBehaviour
 
     public void Reset()
     {
-        PlayerPrefs.SetInt("Level", 0);
-        PlayerPrefs.SetFloat("XP", 0f);
-        PlayerPrefs.SetFloat("totalXP", 0f);
-        PlayerPrefs.SetInt("AP", 0);
+        GameControl.control.Level = 0;
+        GameControl.control.XP = 0f;
+        GameControl.control.totalXP = 0f;
+        GameControl.control.AP = 0;
     }
 
     public float GetRatio() //For the XP Bar fill on the UI

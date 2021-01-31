@@ -8,27 +8,58 @@ public class XPCircle : MonoBehaviour {
     public Text CurXP;
     public Text NextXP;
     public Text TotalXP;
-    //public Text TotalXP;
 
-    public LevelSystem lvlsys;
+    private int Level;
+    private float currentXP;
+    private float totalXP;
 
-    private float cur;
+    public Image CircleFill;
+    public Text CurLevel;
+    public Text NextLevel;
 
-	// Use this for initialization
-	void Start ()
+    public void DisplayStats()
     {
-        cur = 0f;
-	}
-	
-	// Update is called once per frame
-	void Update ()
+        GameControl.control.LoadInfo();
+
+
+        if (GameControl.control.Level < 50)
+        {
+            Level = GameControl.control.Level;
+            currentXP = GameControl.control.XP;
+            CircleFill.fillAmount = GetRatio();
+            CurXP.text = Mathf.FloorToInt(currentXP).ToString();
+            NextXP.text = Mathf.FloorToInt(FindXPtoNextLevel()).ToString();
+            CurLevel.text = Level.ToString();
+            NextLevel.text = (Level + 1).ToString();
+        }
+        else
+        {
+            Level = 50;
+            //currentXP = GameControl.control.XP;
+            CircleFill.fillAmount = 1;
+            CurXP.text = "MAX";
+            NextXP.text = "MAX";
+            CurLevel.text = Level.ToString();
+            NextLevel.text = "MAX";
+        }
+
+        totalXP = GameControl.control.totalXP;
+        TotalXP.text = Mathf.FloorToInt(totalXP).ToString();
+
+        GameControl.control.MM = 1;
+    }
+
+    public float FindXPtoNextLevel()
     {
-        cur = Mathf.Lerp(cur, lvlsys.getCurrentXP(), Time.deltaTime * 2f);
-        CurXP.text = (Mathf.FloorToInt(cur)).ToString();
+        float currentLevel;
+        float NextLevel;
+        currentLevel = (Level + 100) * Mathf.Pow(Level, 1.5f);
+        NextLevel = ((Level + 1) + 100) * Mathf.Pow((Level + 1), 1.5f);
+        return NextLevel - currentLevel;
+    }
 
-        NextXP.text = Mathf.FloorToInt(lvlsys.FindXPtoNextLevel()).ToString();
-        TotalXP.text = Mathf.FloorToInt(lvlsys.getTotalXP()).ToString();
-
-        Debug.Log(cur);
+    public float GetRatio() //For the XP Bar fill on the UI
+    {
+        return currentXP / FindXPtoNextLevel();
     }
 }

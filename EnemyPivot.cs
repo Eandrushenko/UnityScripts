@@ -5,8 +5,13 @@ using UnityEngine;
 public class EnemyPivot : MonoBehaviour {
 
     public Transform Enemy;
-    public Transform target;
+    private Transform target;
     public bool isAggro = false;
+
+    void Start()
+    {
+        target = GameObject.FindWithTag("Player").transform;
+    }
 
     void FixedUpdate()
     {

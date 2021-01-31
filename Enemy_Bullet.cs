@@ -8,13 +8,15 @@ public class Enemy_Bullet : MonoBehaviour {
 
     public float damage = 10f;
     public float speed = 20f;
-    public float impactForce = 30f;
 
-    private float TimeToLive = 3f;
+    public float TimeToLive = 4f;
 
     public float Accuracy = 0f; //The lower the better, 0 = perfect accuracy
 
     public GameObject Collision;
+
+    public string wallcollision;
+    public string playercollision;
 
     void Start()
     {
@@ -33,11 +35,11 @@ public class Enemy_Bullet : MonoBehaviour {
         if (player != null)
         {
             player.TakeDamage(damage);
-
-            if (player.GetComponent<Rigidbody2D>() != null)
-            {
-                player.GetComponent<Rigidbody2D>().AddForce(transform.right * impactForce);
-            }
+            FindObjectOfType<AudioManager>().Play(playercollision);
+        }
+        else
+        {
+            FindObjectOfType<AudioManager>().Play(wallcollision);
         }
 
         Destroy(gameObject);

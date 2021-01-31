@@ -5,8 +5,27 @@ using UnityEngine.SceneManagement;
 
 public class PlayGame : MonoBehaviour {
 
-    public void PlayMyGame ()
+    public Animator transiton;
+
+    public string AreaSelect;
+
+    public void PlayNextLevel()
     {
-        SceneManager.LoadScene("Game");
+        string area = "Area" + GameControl.control.LP.ToString();
+        StartCoroutine(LoadLevel(area));
+    }
+
+    public void PlaySelectedLevel()
+    {
+        StartCoroutine(LoadLevel(AreaSelect));
+    }
+
+    IEnumerator LoadLevel(string Area)
+    {
+        transiton.SetTrigger("Start");
+
+        yield return new WaitForSeconds(1f);
+
+        SceneManager.LoadScene(Area);
     }
 }
